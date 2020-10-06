@@ -14,13 +14,17 @@ def index(request):
 
 
 def register(request):
-    model = User()
-    model.name = request.POST.get('name')
-    model.email = request.POST.get('email')
-    model.password = request.POST.get('password')
-    model.uuid = uuid.uuid1()
+    username = request.POST.get('name')
+    email = request.POST.get('email')
+    password = request.POST.get('password')
+    Uuid = uuid.uuid1()
     try:
-        model.save()
+        user = User.objects.create()
+        user.password = password
+        user.username = username
+        user.email = email
+        user.uuid = Uuid
+        user.save()
     except:
         logging.log("Saving error")
         return HttpResponse(status=500)
@@ -31,6 +35,6 @@ def information(request):
     if request.user.is_authenticated:
         return HttpResponse(request.user.last_login)
     else:
-        return HttpResponse("unauthenticated",status=401)
+        return HttpResponse("unauthenticated", status=401)
 
 # Create your views here.
