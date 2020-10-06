@@ -7,7 +7,7 @@ class User(AbstractUser):
     _id=models.ObjectIdField()
     uuid = models.UUIDField()
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=40,unique=False)
+    username = models.CharField(max_length=40, unique=False)
     itemToSell = [models.UUIDField()]
     soldItem = [models.UUIDField()]
     boughtItem = [models.UUIDField()]
