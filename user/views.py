@@ -5,8 +5,8 @@ from user.models import User
 import time
 import uuid
 import logging
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.contrib import auth
+from django.contrib.auth import authenticate
 
 
 def index(request):
@@ -17,18 +17,29 @@ def register(request):
     username = request.POST.get('name')
     email = request.POST.get('email')
     password = request.POST.get('password')
-    Uuid = uuid.uuid1()
+    if User.objects.filter(email=email).exists():
+        return HttpResponse("This email has been used", status=401)
+    if User.objects.filter(username=username).exists():
+        return HttpResponse("This username has been used",status=401)
     try:
-        user = User.objects.create()
-        user.password = password
-        user.username = username
-        user.email = email
-        user.uuid = Uuid
-        user.save()
+        User.objects.create_user(username=username, password=password, email=email, uuid=uuid.uuid1())
+        user = authenticate(email=email, password=password)
     except:
         logging.log("Saving error")
         return HttpResponse(status=500)
-    return HttpResponse(request.POST.get('account'), status=201)
+    return HttpResponse(request.POST.get('account'), status=200)
+
+
+def login(request):
+    email = request.POST.get('email')
+    password = str(request.POST.get('password'))
+    if not User.objects.filter(email=email).exists():
+        return HttpResponse("This email is not used", status=401)
+    user = authenticate(request, email=email, password=password)
+    if user is not None:
+        return HttpResponse("Logged in", status=200)
+    else:
+        return HttpResponse("Password error", status=401)
 
 
 def information(request):
