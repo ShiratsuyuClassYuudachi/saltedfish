@@ -20,10 +20,11 @@ def register(request):
     if User.objects.filter(email=email).exists():
         return HttpResponse("This email has been used", status=401)
     if User.objects.filter(username=username).exists():
-        return HttpResponse("This username has been used",status=401)
+        return HttpResponse("This username has been used", status=401)
     try:
         User.objects.create_user(username=username, password=password, email=email, uuid=uuid.uuid1())
         user = authenticate(email=email, password=password)
+        request.session['uuid'] = str(user.uuid)
     except:
         logging.log("Saving error")
         return HttpResponse(status=500)
@@ -33,19 +34,23 @@ def register(request):
 def login(request):
     email = request.POST.get('email')
     password = str(request.POST.get('password'))
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            return HttpResponse(status=304)
     if not User.objects.filter(email=email).exists():
         return HttpResponse("This email is not used", status=401)
     user = authenticate(request, email=email, password=password)
     if user is not None:
+        request.session['uuid'] = str(user.uuid)
         return HttpResponse("Logged in", status=200)
     else:
         return HttpResponse("Password error", status=401)
 
 
 def information(request):
-    if request.user.is_authenticated:
-        return HttpResponse(request.user.last_login)
-    else:
-        return HttpResponse("unauthenticated", status=401)
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            return HttpResponse(request.user.username)
+    return HttpResponse("unauthenticated", status=401)
 
 # Create your views here.
