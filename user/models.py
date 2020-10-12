@@ -1,15 +1,18 @@
-from django.db import models
+from django.contrib.auth.base_user import AbstractBaseUser
+from djongo import models
+from django.contrib.auth.models import AbstractUser
 
 
-class User(models.Model):
-    account = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
-    email = models.EmailField()
+class User(AbstractUser):
+    _id=models.ObjectIdField()
     uuid = models.UUIDField()
-    joinDate = models.TimeField()
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=40, unique=False)
     itemToSell = [models.UUIDField()]
     soldItem = [models.UUIDField()]
     boughtItem = [models.UUIDField()]
     wishList = [models.UUIDField()]
-
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    pass
 # Create your models here.
