@@ -22,7 +22,7 @@ def register(request):
     if User.objects.filter(username=username).exists():
         return HttpResponse("This username has been used", status=401)
     try:
-        User.objects.create_user(username=username, password=password, email=email, uuid=uuid.uuid1())
+        User.objects.create_user(username=username, password=password, email=email, uuid=uuid.uuid4())
         user = authenticate(email=email, password=password)
         request.session['uuid'] = str(user.uuid)
     except:
