@@ -7,6 +7,7 @@ import uuid
 import logging
 from django.contrib import auth
 from django.contrib.auth import authenticate
+import json
 
 
 def index(request):
@@ -47,10 +48,94 @@ def login(request):
         return HttpResponse("Password error", status=401)
 
 
+def setAvatar(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            avatar = request.POST.get('avatar')
+            user = User.objects.get(uuid=uuid)
+            user.avatar = avatar
+            user.save()
+            return HttpResponse(status=200)
+    return HttpResponse(status=401)
+
+
+def updateUser(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            user = User.objects.get(uuid=uuid)
+            user.username = username
+            user.email = email
+            user.save()
+            return HttpResponse(status=200)
+    return HttpResponse(status=401)
+
+
+def changePassword(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            password = request.POST.get('password')
+            user = User.objects.get(uuid=uuid)
+            user.set_password(password)
+            user.save()
+            return HttpResponse(status=200)
+    return HttpResponse(status=401)
+
+
 def information(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            return HttpResponse(request.user.username)
+            user = User.objects.get(uuid=uuid)
+            rep = {
+                'username': user.username,
+                'email': user.email,
+                'avatar': user.avatar
+            }
+            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
     return HttpResponse("unauthenticated", status=401)
 
+
+def toSale(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            rep = {
+                'list': user.itemToSell
+            }
+            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def sold(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            rep = {
+                'list': user.soldItem
+            }
+            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def bought(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            rep = {
+                'list': user.boughtItem
+            }
+            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def wishlist(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            rep = {
+                'list': user.wishList
+            }
+            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+    return HttpResponse("unauthenticated", status=401)
 # Create your views here.
