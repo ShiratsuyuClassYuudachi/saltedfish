@@ -39,5 +39,18 @@ def get(request):
         }
         return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
-    
+
+def getList(request):
+    limit = request.GET.get('limit')
+    offset = request.GET.get('offset')
+    itemlist = Item.objects.all()[offset:(limit+offset)]
+    uuidlist = []
+    for item in itemlist:
+        uuidlist.append(item.UUID)
+    rep = {
+        'length': len(itemlist),
+        'list': uuidlist
+    }
+    return HttpResponse(json.dumps(rep),content_type="application/json", status=200)
+
 # Create your views here.
