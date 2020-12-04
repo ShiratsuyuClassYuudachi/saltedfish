@@ -12,13 +12,14 @@ def add(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
             data = json.load(request.body)
+            name = data.name
             description = data.description
             pics = data.pics
             price = data.price
             owner = uuid.UUID(request.session.get("uuid"))
             isSold = False
             UUID = uuid.uuid4()
-            new_item = Item(description=description, pics=pics, price=price, owner=owner, isSold=isSold, UUID=UUID)
+            new_item = Item(name=name, description=description, pics=pics, price=price, owner=owner, isSold=isSold, UUID=UUID)
             new_item.save()
             return HttpResponse(UUID)
     return HttpResponse("unauthenticated", status=401)
@@ -32,6 +33,7 @@ def get(request):
         HttpResponse("No such item", status='404')
     else:
         rep = {
+            'name': item.name,
             'pics': item.pics,
             'description': item.description,
             'price': item.price,
@@ -45,12 +47,39 @@ def getList(request):
     offset = request.GET.get('offset')
     itemlist = Item.objects.all()[offset:(limit+offset)]
     uuidlist = []
+    namelist = []
+    piclist = []
     for item in itemlist:
         uuidlist.append(item.UUID)
+        namelist.append(item.name)
+        piclist.append(item.pics[0])
     rep = {
         'length': len(itemlist),
-        'list': uuidlist
+        'uuidlist': uuidlist,
+        'namelist': namelist,
+        'piclist': piclist
     }
-    return HttpResponse(json.dumps(rep),content_type="application/json", status=200)
+    return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+
+
+def search(request):
+    key = request.GET.get('key')
+    limit = request.GET.get('limit')
+    offset = request.GET.get('offset')
+    itemlist = Item.objects.get(description__icontains=key).all()[offset:(offset+limit)]
+    uuidlist = []
+    namelist = []
+    piclist = []
+    for item in itemlist:
+        uuidlist.append(item.UUID)
+        namelist.append(item.name)
+        piclist.append(item.pics[0])
+    rep = {
+        'length': len(itemlist),
+        'uuidlist': uuidlist,
+        'namelist': namelist,
+        'piclist': piclist
+    }
+    return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
 # Create your views here.

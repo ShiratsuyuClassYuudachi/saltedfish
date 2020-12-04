@@ -3,6 +3,7 @@ from django.db import models
 
 class Item(models.Model):
     UUID = models.UUIDField()
+    name = models.CharField()
     pics = [models.URLField()]
     description = models.CharField(max_length=500)
     price = models.FloatField()
