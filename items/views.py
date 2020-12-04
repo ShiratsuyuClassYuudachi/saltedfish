@@ -37,7 +37,8 @@ def get(request):
             'pics': item.pics,
             'description': item.description,
             'price': item.price,
-            'owner': item.owner
+            'owner': item.owner,
+            'isSold': item.isSold
         }
         return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
@@ -45,7 +46,7 @@ def get(request):
 def getList(request):
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
-    itemlist = Item.objects.all()[offset:(limit+offset)]
+    itemlist = Item.objects.all().filter(isSold=False)[offset:(limit+offset)]
     uuidlist = []
     namelist = []
     piclist = []
@@ -66,7 +67,7 @@ def search(request):
     key = request.GET.get('key')
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
-    itemlist = Item.objects.get(description__icontains=key).all()[offset:(offset+limit)]
+    itemlist = Item.objects.filter(isSold=False).get(description__icontains=key).all()[offset:(offset+limit)]
     uuidlist = []
     namelist = []
     piclist = []
@@ -81,5 +82,4 @@ def search(request):
         'piclist': piclist
     }
     return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
-
 # Create your views here.
