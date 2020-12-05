@@ -29,7 +29,7 @@ def register(request):
     except:
         logging.log("Saving error")
         return HttpResponse(status=500)
-    return HttpResponse(request.POST.get('account'), status=200)
+    return HttpResponse(request.POST.get('account'), status=201)
 
 
 def login(request):
@@ -137,5 +137,42 @@ def wishlist(request):
                 'list': user.wishList
             }
             return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def addwishlist(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            item = request.POST.get('item')
+            if item not in user.wishList:
+                user.wishList.append(item)
+                user.save()
+                return HttpResponse("success", status=201)
+            return HttpResponse("exists", status=403)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def removewishlist(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            item = request.POST.get('item')
+            if item in user.wishList:
+                user.wishList.remove(item)
+                user.save()
+                return HttpResponse("success", status=200)
+            return HttpResponse("exists", status=403)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def inwishlist(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid)
+            item = request.POST.get('item')
+            if item in user.wishList:
+                return HttpResponse(status=200)
+            return HttpResponse(status=404)
     return HttpResponse("unauthenticated", status=401)
 # Create your views here.

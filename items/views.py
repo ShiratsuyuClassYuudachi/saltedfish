@@ -21,7 +21,7 @@ def add(request):
             UUID = uuid.uuid4()
             new_item = Item(name=name, description=description, pics=pics, price=price, owner=owner, isSold=isSold, UUID=UUID)
             new_item.save()
-            return HttpResponse(UUID)
+            return HttpResponse(UUID, status=201)
     return HttpResponse("unauthenticated", status=401)
 
 
