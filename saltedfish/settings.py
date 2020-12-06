@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'items.apps.ItemsConfig',
     'images.apps.ImagesConfig',
     'order.apps.OrderConfig',
+    'message.apps.MessageConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

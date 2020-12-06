@@ -24,6 +24,7 @@ def add(request):
             new_item.save()
             seller = User.objects.get(uuid=owner)
             seller.itemToSell.append(UUID)
+            seller.save()
             return HttpResponse(UUID, status=201)
     return HttpResponse("unauthenticated", status=401)
 
@@ -53,6 +54,7 @@ def delete(request):
                 seller = User.objects.get(uuid=item.owner)
                 seller.itemToSell.remove(item.UUID)
                 item.delete()
+                seller.save()
                 return HttpResponse(status=200)
             return HttpResponse(status=403)
     return HttpResponse("unauthenticated", status=401)

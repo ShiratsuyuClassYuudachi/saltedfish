@@ -8,7 +8,7 @@ class Order(models.Model):
     buyer = models.UUIDField(),
     value = models.FloatField(),
     time = models.TimeField(),
-    check = models.UUIDField(),
+    bill = models.UUIDField(),
     paid = models.BooleanField(),
     delivery = models.UUIDField(),
     finished = models.BooleanField(),
