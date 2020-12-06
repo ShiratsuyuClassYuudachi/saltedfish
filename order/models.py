@@ -10,6 +10,7 @@ class Order(models.Model):
     time = models.TimeField(),
     check = models.UUIDField(),
     paid = models.BooleanField(),
+    delivery = models.UUIDField(),
     finished = models.BooleanField(),
     buyerScore = models.IntegerField(),  # 买家评分
     sellerScore = models.IntegerField(),  # 卖家评分
