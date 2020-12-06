@@ -1,13 +1,11 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.auth import get_user_model
-from user.models import User
-import time
-import uuid
-import logging
-from django.contrib import auth
-from django.contrib.auth import authenticate
 import json
+import logging
+import uuid
+
+from django.contrib.auth import authenticate
+from django.http import HttpResponse
+
+from user.models import User
 
 
 def index(request):
@@ -52,7 +50,7 @@ def setAvatar(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
             avatar = request.POST.get('avatar')
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             user.avatar = avatar
             user.save()
             return HttpResponse(status=200)
@@ -64,7 +62,7 @@ def updateUser(request):
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
             username = request.POST.get('username')
             email = request.POST.get('email')
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             user.username = username
             user.email = email
             user.save()
@@ -76,7 +74,7 @@ def changePassword(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
             password = request.POST.get('password')
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             user.set_password(password)
             user.save()
             return HttpResponse(status=200)
@@ -86,7 +84,7 @@ def changePassword(request):
 def information(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             rep = {
                 'username': user.username,
                 'email': user.email,
@@ -99,7 +97,7 @@ def information(request):
 def toSale(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             rep = {
                 'list': user.itemToSell
             }
@@ -110,7 +108,7 @@ def toSale(request):
 def sold(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             rep = {
                 'list': user.soldItem
             }
@@ -121,7 +119,7 @@ def sold(request):
 def bought(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             rep = {
                 'list': user.boughtItem
             }
@@ -132,7 +130,7 @@ def bought(request):
 def wishlist(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             rep = {
                 'list': user.wishList
             }
@@ -143,7 +141,7 @@ def wishlist(request):
 def addwishlist(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             item = request.POST.get('item')
             if item not in user.wishList:
                 user.wishList.append(item)
@@ -156,7 +154,7 @@ def addwishlist(request):
 def removewishlist(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             item = request.POST.get('item')
             if item in user.wishList:
                 user.wishList.remove(item)
@@ -169,9 +167,32 @@ def removewishlist(request):
 def inwishlist(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
             item = request.POST.get('item')
             if item in user.wishList:
+                return HttpResponse(status=200)
+            return HttpResponse(status=404)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def messagelist(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
+            rep = {
+                'list': user.messageList
+            }
+            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def deleteMessage(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
+            session = request.POST.get('sessionid')
+            if session in user.messageList:
+                user.messageList.remove(session)
                 return HttpResponse(status=200)
             return HttpResponse(status=404)
     return HttpResponse("unauthenticated", status=401)

@@ -13,6 +13,7 @@ class User(AbstractUser):
     boughtItem = [models.UUIDField()]
     wishList = [models.UUIDField()]
     avatar = models.URLField
+    messageList = [models.UUIDField()]
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     pass

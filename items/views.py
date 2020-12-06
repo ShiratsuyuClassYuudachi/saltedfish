@@ -19,16 +19,49 @@ def add(request):
             owner = uuid.UUID(request.session.get("uuid"))
             isSold = False
             UUID = uuid.uuid4()
-            new_item = Item(name=name, description=description, pics=pics, price=price, owner=owner, isSold=isSold, UUID=UUID)
+            new_item = Item(name=name, description=description, pics=pics, price=price, owner=owner, isSold=isSold,
+                            UUID=UUID)
             new_item.save()
+            seller = User.objects.get(uuid=owner)
+            seller.itemToSell.append(UUID)
             return HttpResponse(UUID, status=201)
     return HttpResponse("unauthenticated", status=401)
 
 
+def update(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            data = json.load(request.body)
+            item = Item.objects.get(UUID=data.uuid)
+            if item.isSold is False & item.owner == uuid.UUID(request.session.get("uuid")):
+                item.name = data.name
+                item.description = data.description
+                item.pics = data.pics
+                item.price = data.price
+                item.save()
+                return HttpResponse(status=200)
+            return HttpResponse(status=403)
+    return HttpResponse("unauthenticated", status=401)
+
+
+def delete(request):
+    if request.session.get("uuid") is not None:
+        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
+            data = json.load(request.body)
+            item = Item.objects.get(UUID=data.uuid)
+            if item.isSold is False & item.owner == uuid.UUID(request.session.get("uuid")):
+                seller = User.objects.get(uuid=item.owner)
+                seller.itemToSell.remove(item.UUID)
+                item.delete()
+                return HttpResponse(status=200)
+            return HttpResponse(status=403)
+    return HttpResponse("unauthenticated", status=401)
+
+
 def get(request):
-    itemid = request.GET.get('uuid')
+    itemId = request.GET.get('uuid')
     try:
-        item = Item.objects.get(UUID=itemid)
+        item = Item.objects.get(UUID=itemId)
     except Exception:
         HttpResponse("No such item", status='404')
     else:
@@ -46,19 +79,22 @@ def get(request):
 def getList(request):
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
-    itemlist = Item.objects.all().filter(isSold=False)[offset:(limit+offset)]
-    uuidlist = []
-    namelist = []
-    piclist = []
-    for item in itemlist:
-        uuidlist.append(item.UUID)
-        namelist.append(item.name)
-        piclist.append(item.pics[0])
+    itemList = Item.objects.all().filter(isSold=False)[offset:(limit + offset)]
+    uuidList = []
+    nameList = []
+    picList = []
+    priceList = []
+    for item in itemList:
+        uuidList.append(item.UUID)
+        nameList.append(item.name)
+        picList.append(item.pics[0])
+        priceList.append(item.price)
     rep = {
-        'length': len(itemlist),
-        'uuidlist': uuidlist,
-        'namelist': namelist,
-        'piclist': piclist
+        'length': len(itemList),
+        'uuidlist': uuidList,
+        'namelist': nameList,
+        'picelist': picList,
+        'pricelist':priceList
     }
     return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
@@ -67,19 +103,22 @@ def search(request):
     key = request.GET.get('key')
     limit = request.GET.get('limit')
     offset = request.GET.get('offset')
-    itemlist = Item.objects.filter(isSold=False).get(description__icontains=key).all()[offset:(offset+limit)]
-    uuidlist = []
-    namelist = []
-    piclist = []
-    for item in itemlist:
-        uuidlist.append(item.UUID)
-        namelist.append(item.name)
-        piclist.append(item.pics[0])
+    itemList = Item.objects.filter(isSold=False).get(description__icontains=key).all()[offset:(offset + limit)]
+    uuidList = []
+    nameList = []
+    picList = []
+    priceList = []
+    for item in itemList:
+        uuidList.append(item.UUID)
+        nameList.append(item.name)
+        picList.append(item.pics[0])
+        priceList.append(item.price)
     rep = {
-        'length': len(itemlist),
-        'uuidlist': uuidlist,
-        'namelist': namelist,
-        'piclist': piclist
+        'length': len(itemList),
+        'uuidlist': uuidList,
+        'namelist': nameList,
+        'picelist': picList,
+        'pricelist': priceList
     }
     return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 # Create your views here.
