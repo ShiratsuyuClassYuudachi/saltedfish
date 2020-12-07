@@ -5,7 +5,7 @@ class bill(models.Model):
     UUID = models.UUIDField(),
     price = models.FloatField(),
     type = models.IntegerField(),
-    payment = models.CharField()
+    payment = models.CharField(max_length=128)
 
 
 class delivery(models.Model):
