@@ -27,7 +27,7 @@ def register(request):
     except:
         logging.log("Saving error")
         return HttpResponse(status=500)
-    return HttpResponse(request.POST.get('account'), status=201)
+    return HttpResponse(request.POST.get('email'), status=201)
 
 
 def login(request):
