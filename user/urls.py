@@ -16,5 +16,7 @@ urlpatterns = [
     path('wishlist', views.wishlist),
     path('addwishlist', views.addwishlist),
     path('removewishlist', views.removewishlist),
-    path('checkwishlist', views.inwishlist)
+    path('checkwishlist', views.inwishlist),
+    path('messagelist',views.messagelist),
+    path('deletemessage',views.deleteMessage)
 ]

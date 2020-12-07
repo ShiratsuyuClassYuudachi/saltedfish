@@ -1,13 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from user.models import User
+import json
 import time
 import uuid
-import logging
-from django.contrib.auth import authenticate
-import json
-from order.models import Order
-from items.models import Item
+
+from django.http import HttpResponse
+
+from user.models import User
 from .models import Message, MessageList
 
 
