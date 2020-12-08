@@ -14,6 +14,7 @@ urlpatterns = [
     path('sold', views.sold),
     path('bought', views.bought),
     path('wishlist', views.wishlist),
+    path('getuuid',views.getuuid),
     path('addwishlist', views.addwishlist),
     path('removewishlist', views.removewishlist),
     path('checkwishlist', views.inwishlist),

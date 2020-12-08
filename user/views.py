@@ -82,49 +82,46 @@ def changePassword(request):
 
 
 def information(request):
+
+    user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
+    rep = {
+        'username': user.username,
+        'email': user.email,
+        'avatar': user.avatar
+    }
+    return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+
+
+def getuuid(request):
     if request.session.get("uuid") is not None:
         if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
             user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
-            rep = {
-                'username': user.username,
-                'email': user.email,
-                'avatar': user.avatar
-            }
-            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
+            return HttpResponse(user, status=200)
     return HttpResponse("unauthenticated", status=401)
 
 
 def toSale(request):
-    if request.session.get("uuid") is not None:
-        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
-            rep = {
-                'list': user.itemToSell
-            }
-            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
-    return HttpResponse("unauthenticated", status=401)
+    user = User.objects.get(uuid = request.GET.get('uuid'))
+    rep = {
+        'list': user.itemToSell
+    }
+    return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
 
 def sold(request):
-    if request.session.get("uuid") is not None:
-        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
-            rep = {
-                'list': user.soldItem
-            }
-            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
-    return HttpResponse("unauthenticated", status=401)
+    user = User.objects.get(uuid=request.GET.get('uuid'))
+    rep = {
+        'list': user.soldItem
+    }
+    return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
 
 def bought(request):
-    if request.session.get("uuid") is not None:
-        if User.objects.filter(uuid=uuid.UUID(request.session.get("uuid"))).exists():
-            user = User.objects.get(uuid=uuid.UUID(request.session.get("uuid")))
-            rep = {
-                'list': user.boughtItem
-            }
-            return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
-    return HttpResponse("unauthenticated", status=401)
+    user = User.objects.get(uuid=request.GET.get('uuid'))
+    rep = {
+        'list': user.boughtItem
+    }
+    return HttpResponse(json.dumps(rep), content_type="application/json", status=200)
 
 
 def wishlist(request):
