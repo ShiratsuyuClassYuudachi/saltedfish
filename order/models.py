@@ -7,6 +7,7 @@ class Order(models.Model):
     seller = models.UUIDField(),
     buyer = models.UUIDField(),
     value = models.FloatField(),
+    address = models.CharField(max_length=500),
     time = models.TimeField(),
     bill = models.UUIDField(),
     paid = models.BooleanField(),

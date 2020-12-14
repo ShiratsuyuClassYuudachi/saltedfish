@@ -24,6 +24,7 @@ def buy(request):
                 order.value = item.price
                 order.paid = False
                 order.finished = False
+                order.address = request.POST.get('address')
                 order.buyerScore = -1
                 order.sellerScore = -1
                 order.save()
@@ -67,7 +68,8 @@ def info(request):
                             'time': order.time,
                             'value': order.value,
                             'buyer': order.buyer,
-                            'seller': order.seller
+                            'seller': order.seller,
+                            'address': order.address
                         }
                         return HttpResponse(json.dumps(rep), status=200)
                     else:
@@ -79,6 +81,7 @@ def info(request):
                                 'time': order.time,
                                 'buyer': order.buyer,
                                 'seller': order.seller,
+                                'address': order.address,
                                 'delivery': order.delivery
                             }
                             return HttpResponse(json.dumps(rep), status=200)
@@ -91,6 +94,7 @@ def info(request):
                                     'time': order.time,
                                     'buyer': order.buyer,
                                     'seller': order.seller,
+                                    'address': order.address,
                                     'delivery': order.delivery,
                                     'sellerScore': order.sellerScore,
                                     'sellerComment': order.sellerComment
@@ -104,6 +108,7 @@ def info(request):
                                     'time': order.time,
                                     'buyer': order.buyer,
                                     'seller': order.seller,
+                                    'address': order.address,
                                     'delivery': order.delivery,
                                     'buyerScore': order.buyerScore,
                                     'buyerComment': order.buyerComment
@@ -117,6 +122,7 @@ def info(request):
                                     'time': order.time,
                                     'buyer': order.buyer,
                                     'seller': order.seller,
+                                    'address': order.address,
                                     'delivery': order.delivery,
                                     'buyerScore': order.buyerScore,
                                     'buyerComment': order.buyerComment,
@@ -132,6 +138,7 @@ def info(request):
                                     'time': order.time,
                                     'buyer': order.buyer,
                                     'seller': order.seller,
+                                    'address': order.address,
                                     'delivery': order.delivery,
                                 }
                                 return HttpResponse(json.dumps(rep), status=200)
